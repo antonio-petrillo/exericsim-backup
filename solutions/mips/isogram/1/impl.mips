@@ -1,0 +1,51 @@
+# | Register | Usage     | Type    | Description                                       |
+# | -------- | --------- | ------- | ------------------------------------------------- |
+# | `$a0`    | input     | address | null-terminated input string                      |
+# | `$v0`    | output    | boolean | input is an isogram (`0` = `false`, `1` = `true`) |
+# | `$t0-9`  | temporary | any     | used for temporary storage                        |
+
+.globl is_isogram
+
+is_isogram:
+        li $v0, 0 # visited
+        j loop
+
+loop:
+        lb $t0, ($a0) # load byte at address a0
+        beq $t0, $zero, ret_true # return true if end of string is reached (null terminated)
+        addiu $a0, $a0, 1 # increment address pointer
+        slti $t1, $t0, 65 # t0 <= 'A'
+        bne $t1, $zero, loop
+        slti $t1, $t0, 91 # t0 <= 'z'
+        bne $t1, $zero, is_upper
+        slti $t1, $t0, 97 # t0 <= 'a'
+        bne $t1, $zero, loop
+        slti $t1, $t0, 123 # t0 <= 'Z'
+        bne $t1, $zero, is_lower
+        j loop
+
+is_upper:
+        subu $t0, $t0, 'A' # get shift index
+        li $t1, 1
+        sllv $t1, $t1, $t0 # create bit mask
+        and $t0, $t1, $v0  # chekc if bit is already present
+        or $v0, $v0, $t1
+        bne $t0, $zero, ret_false # alredy present return false
+        j loop # go to next char
+
+is_lower:
+        subu $t0, $t0, 'a'
+        li $t1, 1
+        sllv $t1, $t1, $t0
+        and $t0, $t1, $v0
+        or $v0, $v0, $t1
+        bne $t0, $zero, ret_false
+        j loop
+
+ret_true:
+        li $v0, 1
+        jr $ra 
+
+ret_false:
+        li $v0, 0
+        jr $ra
