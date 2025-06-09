@@ -1,0 +1,18 @@
+# | Register | Usage  | Type    | Description            |
+# | -------- | ------ | ------- | ---------------------- |
+# | `$v0`    | output | address | null-terminated string |
+# my guess are:
+# la => load into register a
+# ra => register a
+
+.globl hello
+
+.data
+
+msg: .asciiz "Hello, World!"
+
+.text
+
+hello:
+        la $v0, msg
+        jr $ra
