@@ -1,0 +1,50 @@
+# | Register | Usage     | Type    | Description                                      |
+# | -------- | --------- | ------- | ------------------------------------------------ |
+# | `$a0`    | input     | address | null-terminated input string                     |
+# | `$v0`    | output    | boolean | input is a pangram (`0` = `false`, `1` = `true`) |
+# | `$t0-9`  | temporary | any     | used for temporary storage                       |
+
+.globl is_pangram
+
+is_pangram:
+        li $v0, 0
+        j loop
+
+loop:
+        lb $t0, ($a0)
+        beq $t0, $zero, final_check
+        addiu $a0, $a0, 1
+        slti $t1, $t0, 'A'
+        bne $t1, $zero, loop
+        slti $t1, $t0, 91
+        bne $t1, $zero, is_upper
+        slti $t1, $t0, 'a'
+        bne $t1, $zero, loop
+        slti $t1, $t0, 123
+        bne $t1, $zero, is_lower
+        j loop
+
+is_upper:
+        subu $t0, $t0, 'A'
+        li $t1, 1
+        sllv $t1, $t1, $t0 
+        or $v0, $t1, $v0  
+        j loop
+
+is_lower:
+        subu $t0, $t0, 'a'
+        li $t1, 1
+        sllv $t1, $t1, $t0
+        or $v0, $t1, $v0
+        j loop
+
+final_check:
+        andi $t0, $v0, 0x03FFFFFF
+        li $t1, 0x03FFFFFF
+        bne $t0, $t1, ret_false
+        li $v0, 1
+        jr $ra
+        
+ret_false:
+        li $v0, 0
+        jr $ra
