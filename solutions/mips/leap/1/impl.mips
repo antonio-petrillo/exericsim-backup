@@ -1,0 +1,35 @@
+## Registers
+
+# | Register | Usage     | Type    | Description                                      |
+# | -------- | --------- | ------- | ------------------------------------------------ |
+# | `$a0`    | input     | integer | year to check                                    |
+# | `$v0`    | output    | boolean | input is leap year (`0` = `false`, `1` = `true`) |
+# | `$t0-9`  | temporary | any     | used for temporary storage                       |
+
+.globl is_leap_year
+
+is_leap_year:
+        li $v0, 0                 # load 0 zero (false) into return register
+        andi $t0, $a0, 3          # compute if multiple of 4, neat bit trick a multiple of 4 has the first 2 bits set to 0!
+        bne $t0, $zero, not_leap  # if remainder is not zero jump to `not_leap`
+        li $t0, 400               # load 400 in register t0
+        div $a0, $t0              # divide input by 400
+        mfhi $t0                  # load reminder into to
+        beq $t0, $zero, is_leap   # if reminder is zero jump to `is_leap`
+        li $t0, 100               # load 100 in register t0
+        div $a0, $t0              # divide input by 100
+        mfhi $t0                  # load reminder in register t0
+        beq $t0, $zero, not_leap  # if reminder is zero jump to `not_leap`
+        # return true, I prefer to avoid the trivial jump to `is_leap` here.
+        li $v0, 1
+        jr $ra
+
+# return true
+is_leap:
+        li $v0, 1
+        jr $ra
+
+# return false
+not_leap:
+        li $v0, 0
+        jr $ra
