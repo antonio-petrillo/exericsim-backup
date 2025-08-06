@@ -3,11 +3,24 @@ defmodule LanguageList do
 
   def add(list, language), do: [language | list]
 
-  def remove(list), do: tl(list)
+  def remove([]), do: []
+  def remove([_ | tl]), do: tl
 
-  def first(list), do: hd(list)
+  def count(list), do: count_(list, 0)
 
-  def count(list), do: length(list)
+  def first([]), do: nil
+  def first([h | _]), do: h
 
-  def functional_list?(list),do: "Elixir" in list
+  defp count_([], len), do: len
+  defp count_([_ | tl], len), do: count_(tl, len + 1)
+
+  def functional_list?([]), do: false
+
+  def functional_list?([h | tl]) do
+    if h == "Elixir" do
+      true
+    else
+      functional_list?(tl)
+    end
+  end
 end
