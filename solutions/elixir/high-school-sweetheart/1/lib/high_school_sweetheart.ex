@@ -9,30 +9,21 @@ defmodule HighSchoolSweetheart do
     name
     |> first_letter
     |> String.upcase
-    |> Kernel.<>(".")
+    |> (fn s -> s <> "." end).()
   end
 
   def initials(full_name) do
-    [name, last_name] = String.split(full_name)
-    "#{initial(name)} #{initial(last_name)}"
+    full_name
+    |> String.split(" ")
+    |> Enum.map(&initial/1)
+    |> Enum.join(" ")
   end
 
   def pair(full_name1, full_name2) do
-    """
-         ******       ******
-       **      **   **      **
-     **         ** **         **
-    **            *            **
-    **                         **
-    **     #{initials(full_name1)}  +  #{initials(full_name2)}     **
-     **                       **
-       **                   **
-         **               **
-           **           **
-             **       **
-               **   **
-                 ***
-                  *
-    """
+"""
+❤-------------------❤
+|  #{initials(full_name1)}  +  #{initials(full_name2)}  |
+❤-------------------❤
+"""
   end
 end
